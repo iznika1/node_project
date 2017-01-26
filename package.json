@@ -1,0 +1,31 @@
+{
+  "name": "AlphaOmega",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch . server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidAbram/AlphaOmega.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidAbram/AlphaOmega/issues"
+  },
+  "homepage": "https://github.com/DavidAbram/AlphaOmega#readme",
+  "dependencies": {
+    "async": "^2.1.2",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "morgan": "1.7.0",
+    "sqlite3": "3.1.8"
+  },
+  "devDependencies": {
+    "nodemon": "1.11.0"
+  }
+}
