@@ -106,9 +106,9 @@ app.post('/translate', (req, res) => {
         let langTo = req.body.langTo
         let word = req.body.word
         let translation = req.body.translation
-		
 
         if (!config.langs.includes(langFrom) || !config.langs.includes(langTo) || langFrom === undefined || langTo === undefined || word === undefined || translation === undefined) {
+
             res.status(500).send('')
 
         } else {

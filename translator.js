@@ -61,7 +61,7 @@ module.exports = {
         })
     },
     translateById: (id, langFrom, langTo, callback) =>{
-        var result = JSON.parse(`{ "${langFrom}": "", "${langTo}": [] }`)
+        var result = { langFrom: "", langTo: [] };
 
         db.each(`SELECT ${langFrom}.word as wordFrom, ${langTo}.word FROM ${langFrom} 
                 JOIN translation ON ${langFrom}.id == translation.${langFrom}id 
@@ -69,8 +69,8 @@ module.exports = {
                 WHERE ${langFrom}.id == '${id}'`
             , (err, row) => {
                 if (err == null) {
-                    if(result[`${langFrom}`] == "") result[`${langFrom}`] = row.wordFrom
-                    result[`${langTo}`].push(row.word)
+                    if(result.langFrom == "") result.langFrom = row.wordFrom
+                    result.langTo.push(row.word)
                 } else {
                     callback(err)
                 }
@@ -83,7 +83,7 @@ module.exports = {
             })
     },
     translate: (word, langFrom, langTo, callback) => {
-        result = JSON.parse(`{ "${langFrom}": "${word}", "${langTo}": [] }`)
+        result =  { langFrom: word, langTo: [] };
 
         db.each(`SELECT ${langTo}.word FROM ${langFrom} 
                 JOIN translation ON ${langFrom}.id == translation.${langFrom}id 
@@ -91,7 +91,7 @@ module.exports = {
                 WHERE ${langFrom}.word == '${word}'`
             , (err, row) => {
                 if (err == null) {
-                    result[`${langTo}`].push(row.word)
+                    result.langTo.push(row.word)
                 } else {
                     callback(err)
                 }
