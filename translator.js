@@ -1,6 +1,10 @@
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('translate.db');
 var async = require('async');
+var bcrypt = require('bcryptjs');
+var btoa = require('btoa');
+var guid = require('guid');
+
 
 function removeWordById(wordId, lang, callback) {
     
@@ -43,8 +47,68 @@ module.exports = {
             db.run("CREATE TABLE if not exists croatian (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT)")
             db.run("CREATE TABLE if not exists slovenian (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT)")
             db.run("CREATE TABLE if not exists translation (slovenianid INTEGER, croatianid INTEGER, PRIMARY KEY (slovenianid, croatianid))")
-            db.run("CREATE TABLE if not exists users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, hashedPassword TEXT, salt TEXT)")
+            db.run("CREATE TABLE if not exists users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, hashedPassword TEXT, token TEXT)")
         });
+    },
+    auth: (token, callback) => {
+        token = token.slice(7);
+        db.get(`SELECT * FROM users WHERE token == '${token}'`, (err, result) => {
+            if(err == null && result !== undefined){
+                console.log(result);
+                callback(null)
+            } else {
+                callback('DENIED')
+            }
+        });
+    },
+    register: (username, password, callback) => {
+      bcrypt.hash(password, 10, function (err, hash) {
+          if(err == null) {
+              let token = btoa(guid.create())
+              db.run(`INSERT INTO users (username, hashedPassword, token)
+                         VALUES ('${username}', '${hash}', '${token}')`
+                        , function (err) {
+                            if (err == null) {
+                                callback(null)
+                            } else {
+                                callback(err)
+                            }
+                        });
+          } else {
+              callback(err)
+          }
+      });
+    },
+    login: (username, password, callback) => {
+        db.get(`SELECT * FROM users WHERE username == '${username}'`, (err, result) => {
+            if(err == null){
+                bcrypt.compare(password, result.hashedPassword, function(err, res) {
+                    if(err == null) {
+                        callback(null, {
+                            accessToken: result.token,
+                            grantType: 'bearer'
+                        })
+                    } else {
+                        callback(err)
+                    }
+                });
+            } else {
+                callback(err)
+            }
+        });
+    },
+    users: (callback) => {
+        var result = { users : []}
+
+        db.each(`SELECT * FROM users`,  (err, row) => {
+            result.users.push(row)
+        }, (err) => {
+            if(err == null) {
+                callback(null, result)
+            } else {
+                callback(err)
+            }
+        })
     },
     getDictionary: (lang, callback) =>{
         

@@ -20,8 +20,11 @@
   "homepage": "https://github.com/DavidAbram/AlphaOmega#readme",
   "dependencies": {
     "async": "^2.1.2",
+    "bcryptjs": "^2.4.0",
     "body-parser": "1.15.2",
+    "btoa": "^1.1.2",
     "express": "4.14.0",
+    "guid": "0.0.12",
     "morgan": "1.7.0",
     "sqlite3": "3.1.8"
   },
